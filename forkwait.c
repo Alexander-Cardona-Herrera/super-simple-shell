@@ -7,13 +7,13 @@
 int main()
 {
     
-    char *argv[] = {"/tmp", "ls", "-l", NULL};
+char *argv[] = {"/bin/ls", "-l", "/tmp/", NULL};
 
-    for(int i = 0; i < 5 ;i++)
-	{
+for(int i = 0; i < 5 ;i++)
+{
 		if(fork() == 0)
 		{
-            printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
+            printf("[soy] pid %d de [parent] pid %d\n",getpid(),getppid());
             if (execve(argv[0], argv, NULL) == -1)
                 perror("Error");
 
