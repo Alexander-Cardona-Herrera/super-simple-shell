@@ -6,7 +6,8 @@
   
 int main()
 {
-    
+
+  int status;
 char *argv[] = {"/bin/ls", "-l", "/tmp/", NULL};
 
 for(int i = 0; i < 5 ;i++)
@@ -19,10 +20,8 @@ for(int i = 0; i < 5 ;i++)
 
             exit(0);
         }
-    }
-    
-	for(int i = 0; i < 5 ;i++)
-	wait(NULL);
-	
+		for(int i = 0; i < 5 ;i++)
+		  wait(&status);
+    }	
     return (0);
 }
