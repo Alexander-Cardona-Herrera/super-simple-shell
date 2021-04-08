@@ -13,4 +13,11 @@ int process_ejecutables(char **tokens);
 char *read_line(void);
 void repetir_acciones(void);
 
+char *str_concat(char *s1, char *s2);
+int _strncmp (char *s1, char *s2, size_t n);
+int _path(void);
+char **dividir_path(char *aux);
+
+int contar_palabras(char *frase);
+
 # endif

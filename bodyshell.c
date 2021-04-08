@@ -1,12 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
-#define DELIM " \t\r\n"
-#define BUF 1024
 #include <string.h>
 #include "holberton.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+int _strncmp (char *s1, char *s2, size_t n);
+extern char** environ;
+
 
 char *read_line(void)
 {
@@ -16,11 +18,13 @@ char *read_line(void)
 	write(STDIN_FILENO, "#cisfun$ ", 10);
 
 	bytes_leidos = getline(&comando, &numero_bytes, stdin);
+	comando[bytes_leidos - 1] = '\0';
 
 	if (feof(stdin))
 	{
 		exit(EXIT_SUCCESS);
 	}
+
 	else if (bytes_leidos == -1)
 	{
 		write(STDIN_FILENO, "Error.", 7);
@@ -31,18 +35,17 @@ char *read_line(void)
 char **dividir_comandos(char *comando)
 {
 	int posicion = 0;
-	char **tokens = malloc(BUF * sizeof(char*));
+	char **tokens = malloc((contar_palabras(comando) + 1) * sizeof(char*));
 	char *token;
-	token = strtok(comando, DELIM);
+	token = strtok(comando, " \t\r\n");
 
 	while (token != NULL)
 	{
 		tokens[posicion] = token;
 		posicion++;
-		token = strtok(NULL, DELIM);
+		token = strtok(NULL, " \t\r\n");
 	}
 
-	tokens[posicion] = NULL;
 	return tokens;
 }
 
@@ -52,9 +55,11 @@ int process_ejecutables(char **tokens)
 	int status;
 	pid = fork();
 
+	/*tiene o no, sino ponga*/
+
 	if (pid == 0) 
 	{
-		if (execve(tokens[0], tokens, NULL) == -1)
+		if (execve(tokens[0], tokens, environ) == -1)
 		{
 			perror("Error");
 			exit(0);
@@ -65,14 +70,49 @@ int process_ejecutables(char **tokens)
 
 void repetir_acciones()
 {
-  char *comando;
-  char **tokens;
-  int status = 1;
-	do{
-	comando = read_line();
-	tokens= dividir_comandos(comando);
-	status = process_ejecutables(tokens);
-	free(comando);
-	free(tokens);
-	} while (status);
+  	char *comando;
+  	char **tokens;
+  	int status = 1;
+
+	while (status)
+	{	
+		comando = read_line();
+		if(_strncmp(comando, "path", 5)==0)
+		{
+	  		_path();
+		}
+		tokens= dividir_comandos(comando);
+			if(_strncmp(tokens[0], "exit", 5)==0)
+			{
+   			exit(0);
+    		}
+		/*	if (tokens[0] == "\n" && tokens[1] == NULL)
+				read_line();*/
+
+		status = process_ejecutables(tokens);
+		free(comando);
+		free(tokens);
+	}
+}
+
+int _strncmp (char *s1, char *s2, size_t n)
+{
+	int i;
+
+	for(int i = 0; i < n; i++)
+    {
+        if (s1[i] == s2[i])
+        {
+            if(i == (n-1))
+                return 0;
+        }
+
+        int a1 = (int) s1[i];
+        int a2 = (int) s2[i];
+		
+        if(a1 > a2)
+            return 1;
+        if(a2 > a1)
+            return -1;
+    }
 }
