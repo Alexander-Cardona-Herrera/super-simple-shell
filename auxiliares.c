@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-extern char** environ;
+
 
 char *_path(void)
 {
@@ -20,7 +20,6 @@ char *_path(void)
         }
         i++;
     }
-
     return (aux);
 }
 
@@ -60,10 +59,10 @@ char *str_concat(char *s1, char *s2)
 }
 char **dividir_path(char *aux)
 {
-
 	int posicion = 0;
     int i;
     int conteo = 1;
+	char *aux1;
     char *path;
 
     for(i = 0; aux[i] != '\0'; i++)
@@ -71,7 +70,8 @@ char **dividir_path(char *aux)
             conteo++;
 
 	char **paths = malloc((conteo + 1) * sizeof(char*));
-	path = strtok(aux, ":");
+	aux1 = strdup(aux);
+	path = strtok(aux1, ":");
 
 	while (path != NULL)
 	{
@@ -79,7 +79,6 @@ char **dividir_path(char *aux)
 		posicion++;
 		path = strtok(NULL, ":");
 	}
-
 	paths[posicion] = NULL;
 	return (paths);
 }
@@ -98,4 +97,43 @@ int contar_palabras(char *frase)
         count++;
 
     return (count);
+}
+
+int _strncmp (char *s1, char *s2, size_t n)
+{
+	int i;
+
+	for(int i = 0; i < n; i++)
+    {
+        if (s1[i] == s2[i])
+        {
+            if(i == (n-1))
+                return 0;
+        }
+
+        int a1 = (int) s1[i];
+        int a2 = (int) s2[i];
+		
+        if(a1 > a2)
+            return 1;
+        if(a2 > a1)
+            return -1;
+    }
+}
+
+char **dividir_comandos(char *comando)
+{
+	int posicion = 0;
+	char **tokens = malloc((contar_palabras(comando) + 1) * sizeof(char*));
+	char *token;
+	token = strtok(comando, " \t\r\n");
+
+	while (token != NULL)
+	{
+		tokens[posicion] = token;
+		posicion++;
+		token = strtok(NULL, " \t\r\n");
+	}
+	tokens[posicion] = NULL;
+	return tokens;
 }

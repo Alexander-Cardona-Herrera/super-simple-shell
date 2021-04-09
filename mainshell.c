@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "holberton.h"
 
-int main(int argc, char **argv)
+int main()
 {
   repetir_acciones();
   return 0;

@@ -33,54 +33,43 @@ char *read_line(void)
 	return (comando);
 }
 
-char **dividir_comandos(char *comando)
-{
-	int posicion = 0;
-	char **tokens = malloc((contar_palabras(comando) + 1) * sizeof(char*));
-	char *token;
-	token = strtok(comando, " \t\r\n");
-
-	while (token != NULL)
-	{
-		tokens[posicion] = token;
-		posicion++;
-		token = strtok(NULL, " \t\r\n");
-	}
-	tokens[posicion] = NULL;
-	return tokens;
-}
-
 int process_ejecutables(char **tokens)
 {
 	pid_t pid;
-	int status;
 	struct stat st;
 	char *token = tokens[0];
 	char **paths;
 	char *fullpath;
 	pid = fork();
+	wait(NULL);
 	int i = 0;
 	fullpath = _path();
 	paths = dividir_path(fullpath);
-
-	/*tiene o no, sino ponga*/
+	char *aux;
 	
 	if (pid == 0) 
 	{
 		if (tokens[0] != NULL && token[0] != '/')
+		{
+			tokens[0] = str_concat("/", tokens[0]);
 			while (paths[i] != NULL)
 			{
-				printf("%s\n", str_concat(paths[i], tokens[0]));	
+				aux = str_concat(paths[i], tokens[0]);
+				if (stat(aux, &st) == 0)
+				{
+					execve(aux, tokens, NULL);
+				}
 				i++;
 			}
-	
+		}
+		
 		else if (execve(tokens[0], tokens, environ) == -1)
 		{
 			perror("Error");
 			exit(0);
 		}
+		free(paths);
 	}
-	wait(&status);
 }
 
 void repetir_acciones()
@@ -110,24 +99,3 @@ void repetir_acciones()
 	}
 }
 
-int _strncmp (char *s1, char *s2, size_t n)
-{
-	int i;
-
-	for(int i = 0; i < n; i++)
-    {
-        if (s1[i] == s2[i])
-        {
-            if(i == (n-1))
-                return 0;
-        }
-
-        int a1 = (int) s1[i];
-        int a2 = (int) s2[i];
-		
-        if(a1 > a2)
-            return 1;
-        if(a2 > a1)
-            return -1;
-    }
-}

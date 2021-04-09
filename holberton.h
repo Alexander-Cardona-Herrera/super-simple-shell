@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+extern char** environ;
+
 char **dividir_comandos(char *comando);
 int process_ejecutables(char **tokens);
 char *read_line(void);
