@@ -7,7 +7,7 @@
 #include <sys/wait.h>
 extern char** environ;
 
-int _path(void)
+char *_path(void)
 {
     int i = 0;
     char *aux = NULL;
@@ -21,7 +21,7 @@ int _path(void)
         i++;
     }
 
-    dividir_path(aux);
+    return (aux);
 }
 
 char *str_concat(char *s1, char *s2)
@@ -76,13 +76,12 @@ char **dividir_path(char *aux)
 	while (path != NULL)
 	{
 		paths[posicion] = path;
-		printf("%s\n", path);
 		posicion++;
 		path = strtok(NULL, ":");
 	}
 
 	paths[posicion] = NULL;
-    repetir_acciones();
+	return (paths);
 }
 
 int contar_palabras(char *frase)

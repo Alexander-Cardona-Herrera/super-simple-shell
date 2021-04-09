@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 int _strncmp (char *s1, char *s2, size_t n);
 extern char** environ;
@@ -45,7 +46,7 @@ char **dividir_comandos(char *comando)
 		posicion++;
 		token = strtok(NULL, " \t\r\n");
 	}
-
+	tokens[posicion] = NULL;
 	return tokens;
 }
 
@@ -53,13 +54,27 @@ int process_ejecutables(char **tokens)
 {
 	pid_t pid;
 	int status;
+	struct stat st;
+	char *token = tokens[0];
+	char **paths;
+	char *fullpath;
 	pid = fork();
+	int i = 0;
+	fullpath = _path();
+	paths = dividir_path(fullpath);
 
 	/*tiene o no, sino ponga*/
-
+	
 	if (pid == 0) 
 	{
-		if (execve(tokens[0], tokens, environ) == -1)
+		if (tokens[0] != NULL && token[0] != '/')
+			while (paths[i] != NULL)
+			{
+				printf("%s\n", str_concat(paths[i], tokens[0]));	
+				i++;
+			}
+	
+		else if (execve(tokens[0], tokens, environ) == -1)
 		{
 			perror("Error");
 			exit(0);
@@ -73,7 +88,7 @@ void repetir_acciones()
   	char *comando;
   	char **tokens;
   	int status = 1;
-
+	
 	while (status)
 	{	
 		comando = read_line();
